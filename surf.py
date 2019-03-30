@@ -53,15 +53,18 @@ def precipitation():
 
 @app.route("/api/v1.0/stations")
 def station():
+    session=Session(engine)
+    station_list = session.query(Measurement.station).distinct()
     station_list2 = []
-    for station in station_list:
+    for x in station_list:
         station_dict = {}
-        station_dict["Station"] = station
+        station_dict["Station"] = x
         station_list2.append(station_dict)
     return jsonify(station_list2)
 
 @app.route("/api/v1.0/tobs")
 def tobs():
+    session=Session(engine)
     tobs = []
     for date, tob in station_data:
         tob_dict = {}
@@ -72,6 +75,7 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 def tob_start(start):
+    session=Session(engine)
     start_tobs=[]
     tob_results = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= start).all()
@@ -85,6 +89,7 @@ def tob_start(start):
 
 @app.route("/api/v1.0/<start>/<end>")
 def tob_start_end(start, end):
+    session=Session(engine)
     start_end_tobs=[]
     tob_results2 = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)).\
         filter(Measurement.date >= start).filter(Measurement.date <= end).all()
